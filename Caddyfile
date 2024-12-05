@@ -1,0 +1,19 @@
+bgc.localhost {
+	tls internal
+	reverse_proxy localhost:5801
+}
+
+bgc-lite.localhost {
+	tls internal
+	reverse_proxy localhost:5802
+}
+
+api.localhost {
+	tls internal
+	reverse_proxy localhost:3000
+}
+
+playwrite.localhost {
+	tls internal
+	reverse_proxy localhost:5173
+}
