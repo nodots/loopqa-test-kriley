@@ -7,9 +7,9 @@ interface AsanaCredentials {
 }
 
 const ASANA_CREDENTIALS: AsanaCredentials = {
-  baseUrl: 'https://animated-gingersnap-8cf7f2.netlify.app/',
-  username: 'admin',
-  password: 'password123',
+  baseUrl: process.env.ASANA_BASE_URL || '',
+  username: process.env.ASANA_USERNAME || '',
+  password: process.env.ASANA_PASSWORD || '',
 }
 
 const ASANA_SWIMLANE_TYPES = ['To Do', 'In Progress', 'Review', 'Done']
