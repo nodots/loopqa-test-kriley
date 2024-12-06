@@ -1,51 +1,17 @@
-import { test, expect, Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import dotenv from 'dotenv'
+import { AsanaSwimlaneTypes } from './constants'
+import { getSwimlanes } from './dom-helpers'
+import { TestData } from './test-data'
+import { AsanaCredentials, AsanaStory, AsanaSwimlane } from './types'
+dotenv.config({ path: '../.env' })
 
-interface AsanaCredentials {
-  baseUrl: string
-  username: string
-  password: string
-}
-
-const ASANA_CREDENTIALS: AsanaCredentials = {
-  baseUrl: process.env.ASANA_BASE_URL || '',
-  username: process.env.ASANA_USERNAME || '',
-  password: process.env.ASANA_PASSWORD || '',
-}
-
-const ASANA_SWIMLANE_TYPES = ['To Do', 'In Progress', 'Review', 'Done']
-
-/**
- * Retrieves the swimlanes from the given page. This is heavy on specific selectors ATM, but, we need to infer relationships between tasks and swimlanes
- * TODO: Refactor to be less dependent on specific selectors.
- * @param {Page} page - The Playwright page object to interact with.
- * @returns {Promise<any[]>} A promise that resolves to an array of swimlane HTML content.
- * @throws {Error} If the swimlanes are not found or incomplete.
- */
-async function getSwimlanes(page: Page) {
-  let swimlanes: any[] = []
-  // Retrieve the main element
-  const mainElement = await page.$('main')
-
-  // Retrieve the div that contains the swimlanes
-  const swimlanesContainer = await mainElement?.$('div > div')
-
-  // Retrieve the swimlane divs
-  // FIXME: Nasty selector
-  const swimlaneDivs = await swimlanesContainer?.$$(
-    'div.flex.flex-col.w-80.bg-gray-50.rounded-lg.p-4'
-  )
-
-  // Check if the swimlanes are retrieved correctly
-  if (swimlaneDivs?.length !== ASANA_SWIMLANE_TYPES.length) {
-    throw new Error('Swimlanes not found or incomplete')
-  }
-
-  // Log the swimlanes for debugging
-  for (const swimlane of swimlaneDivs) {
-    const textContent = await swimlane.innerHTML()
-    swimlanes.push(textContent)
-  }
-  return swimlanes
+export const ASANA_CREDENTIALS: AsanaCredentials = {
+  baseUrl:
+    process.env.ASANA_BASE_URL ||
+    'https://animated-gingersnap-8cf7f2.netlify.app',
+  username: process.env.ASANA_USERNAME || 'admin',
+  password: process.env.ASANA_PASSWORD || 'password123',
 }
 
 test.beforeEach(async ({ page }) => {
@@ -71,18 +37,27 @@ test.beforeEach(async ({ page }) => {
 // 4  - Confirm tags: "Feature" "High Priority”
 test('Test Case 1', async ({ page }) => {
   await page.click('text=Web Application')
+  const webAppTestData = TestData.web
+  const todoSwimlaneData: AsanaSwimlane = webAppTestData.swimlanes.find(
+    (l) => l.type === 'To Do'
+  ) as AsanaSwimlane
 
   const swimlanes = await getSwimlanes(page)
 
+  const testStory = todoSwimlaneData.stories.find(
+    (s) => s.title === 'Implement user authentication'
+  ) as AsanaStory
+
   expect(swimlanes).toBeTruthy()
   expect(swimlanes?.length).toBeGreaterThan(0)
-  expect(swimlanes?.length).toBe(4)
+  expect(swimlanes?.length).toBe(AsanaSwimlaneTypes.length)
   const todoSwimlane = swimlanes[0]
   expect(todoSwimlane).toBeTruthy()
-  expect(todoSwimlane).toContain('To Do')
-  expect(todoSwimlane).toContain('Implement user authentication')
-  expect(todoSwimlane).toContain('Feature')
-  expect(todoSwimlane).toContain('High Priority')
+  expect(todoSwimlane).toContain(todoSwimlaneData.type)
+  expect(todoSwimlane).toContain(testStory.title)
+  testStory.tags.forEach((tag) => {
+    expect(todoSwimlane).toContain(tag)
+  })
 })
 
 // Test Case 2
