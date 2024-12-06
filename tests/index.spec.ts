@@ -24,14 +24,13 @@ const ASANA_SWIMLANE_TYPES = ['To Do', 'In Progress', 'Review', 'Done']
 async function getSwimlanes(page: Page) {
   let swimlanes: any[] = []
   // Retrieve the main element
-  const mainElement = await page.$('main.flex-1')
+  const mainElement = await page.$('main')
 
   // Retrieve the div that contains the swimlanes
-  const swimlanesContainer = await mainElement?.$(
-    'div.h-full.overflow-x-auto > div.inline-flex.gap-6.p-6.h-full'
-  )
+  const swimlanesContainer = await mainElement?.$('div > div')
 
   // Retrieve the swimlane divs
+  // FIXME: Nasty selector
   const swimlaneDivs = await swimlanesContainer?.$$(
     'div.flex.flex-col.w-80.bg-gray-50.rounded-lg.p-4'
   )
