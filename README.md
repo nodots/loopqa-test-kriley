@@ -31,8 +31,8 @@ While it is a best-practice to test only [user-visible behavior](https://playwri
 
 ## Results
 
-TKTK Summary of test run outcomes, noting any failures.
+![Test Results](./playwright-report/results.png)
 
 ## Recommendations
 
-Consider adding the [Asana TypeScript types](https://www.npmjs.com/package/@types/asana) to improve the `getSwimlanes` function. The downside is that it creates a [third-party dependency](https://playwright.dev/docs/best-practices#avoid-testing-third-party-dependencies), which is why I chose to create very simple types that describe the how Swimlanes/Stories/Tags are related in the presentation layer.
+Consider adding the [Asana TypeScript types](https://www.npmjs.com/package/@types/asana) to improve the `getSwimlanes` function. The downside is that it creates a [third-party dependency](https://playwright.dev/docs/best-practices#avoid-testing-third-party-dependencies), which is why I chose to create very simple types that describe the how Boards/Swimlanes/Stories/Tags are related in the presentation layer.
