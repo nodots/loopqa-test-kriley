@@ -1,6 +1,4 @@
-import { test, expect, ElementHandle } from '@playwright/test'
-import { exec } from 'child_process'
-import exp from 'constants'
+import { test, expect, Page } from '@playwright/test'
 
 interface AsanaCredentials {
   baseUrl: string
@@ -14,11 +12,42 @@ const ASANA_CREDENTIALS: AsanaCredentials = {
   password: 'password123',
 }
 
-// Implement login automation for Asana using the following credentials:
-// Demo App: https://animated-gingersnap-8cf7f2.netlify.app/
-// Email: admin
-// Password: password123
-// The script should input these credentials into the login form and submit it successfully.
+const ASANA_SWIMLANE_TYPES = ['To Do', 'In Progress', 'Review', 'Done']
+
+/**
+ * Retrieves the swimlanes from the given page. This is heavy on specific selectors ATM, but, we need to infer relationships between tasks and swimlanes
+ * TODO: Refactor to be less dependent on specific selectors.
+ * @param {Page} page - The Playwright page object to interact with.
+ * @returns {Promise<any[]>} A promise that resolves to an array of swimlane HTML content.
+ * @throws {Error} If the swimlanes are not found or incomplete.
+ */
+async function getSwimlanes(page: Page) {
+  let swimlanes: any[] = []
+  // Retrieve the main element
+  const mainElement = await page.$('main.flex-1')
+
+  // Retrieve the div that contains the swimlanes
+  const swimlanesContainer = await mainElement?.$(
+    'div.h-full.overflow-x-auto > div.inline-flex.gap-6.p-6.h-full'
+  )
+
+  // Retrieve the swimlane divs
+  const swimlaneDivs = await swimlanesContainer?.$$(
+    'div.flex.flex-col.w-80.bg-gray-50.rounded-lg.p-4'
+  )
+
+  // Check if the swimlanes are retrieved correctly
+  if (swimlaneDivs?.length !== ASANA_SWIMLANE_TYPES.length) {
+    throw new Error('Swimlanes not found or incomplete')
+  }
+
+  // Log the swimlanes for debugging
+  for (const swimlane of swimlaneDivs) {
+    const textContent = await swimlane.innerHTML()
+    swimlanes.push(textContent)
+  }
+  return swimlanes
+}
 
 test.beforeEach(async ({ page }) => {
   await page.goto(ASANA_CREDENTIALS.baseUrl)
@@ -36,12 +65,6 @@ test.beforeEach(async ({ page }) => {
   await submitButton.click()
 })
 
-interface AsanaTodoItem {
-  title: string
-  description: string
-  tags: string[]
-}
-
 // Test Case 1
 // 1  - Login to Demo App.
 // 2  - Navigate to "Web Application."
@@ -49,10 +72,18 @@ interface AsanaTodoItem {
 // 4  - Confirm tags: "Feature" "High Priority”
 test('Test Case 1', async ({ page }) => {
   await page.click('text=Web Application')
-  await page.waitForSelector('text=Implement user authentication')
-  await page.waitForSelector('text=To Do')
-  await page.waitForSelector('text=Feature')
-  await page.waitForSelector('text=High Priority')
+
+  const swimlanes = await getSwimlanes(page)
+
+  expect(swimlanes).toBeTruthy()
+  expect(swimlanes?.length).toBeGreaterThan(0)
+  expect(swimlanes?.length).toBe(4)
+  const todoSwimlane = swimlanes[0]
+  expect(todoSwimlane).toBeTruthy()
+  expect(todoSwimlane).toContain('To Do')
+  expect(todoSwimlane).toContain('Implement user authentication')
+  expect(todoSwimlane).toContain('Feature')
+  expect(todoSwimlane).toContain('High Priority')
 })
 
 // Test Case 2
@@ -62,8 +93,12 @@ test('Test Case 1', async ({ page }) => {
 // Confirm tags: "Bug"
 test('Test Case 2', async ({ page }) => {
   await page.click('text=Web Application')
-  await page.waitForSelector('text=Fix navigation bug')
-  await page.waitForSelector('text=Bug')
+  const swimlanes = await getSwimlanes(page)
+  const todoSwimlane = swimlanes[0]
+  expect(todoSwimlane).toBeTruthy()
+  expect(todoSwimlane).toContain('To Do')
+  expect(todoSwimlane).toContain('Fix navigation bug')
+  expect(todoSwimlane).toContain('Bug')
 })
 
 // Test Case 3
@@ -74,9 +109,12 @@ test('Test Case 2', async ({ page }) => {
 
 test('Test Case 3', async ({ page }) => {
   await page.click('text=Web Application')
-  await page.waitForSelector('text=Design system updates')
-  await page.waitForSelector('text=In Progress')
-  await page.waitForSelector('text=Design')
+  const swimlanes = await getSwimlanes(page)
+  const inProgressSwimlane = swimlanes[1]
+  expect(inProgressSwimlane).toBeTruthy()
+  expect(inProgressSwimlane).toContain('In Progress')
+  expect(inProgressSwimlane).toContain('Design system updates')
+  expect(inProgressSwimlane).toContain('Design')
 })
 
 // Test Case 4
@@ -86,9 +124,12 @@ test('Test Case 3', async ({ page }) => {
 // Confirm tags: "Feature”
 test('Test Case 4', async ({ page }) => {
   await page.click('text=Mobile Application')
-  await page.waitForSelector('text=Push notification system')
-  await page.waitForSelector('text=To Do')
-  await page.waitForSelector('text=Feature')
+  const swimlanes = await getSwimlanes(page)
+  const todoSwimlane = swimlanes[0]
+  expect(todoSwimlane).toBeTruthy()
+  expect(todoSwimlane).toContain('To Do')
+  expect(todoSwimlane).toContain('Push notification system')
+  expect(todoSwimlane).toContain('Feature')
 })
 
 // Test Case 5
@@ -98,10 +139,13 @@ test('Test Case 4', async ({ page }) => {
 // Confirm tags: "Feature" & "High Priority”
 test('Test Case 5', async ({ page }) => {
   await page.click('text=Mobile Application')
-  await page.waitForSelector('text=Offline mode')
-  await page.waitForSelector('text=In Progress')
-  await page.waitForSelector('text=Feature')
-  await page.waitForSelector('text=High Priority')
+  const swimlanes = await getSwimlanes(page)
+  const inProgressSwimlane = swimlanes[1]
+  expect(inProgressSwimlane).toBeTruthy()
+  expect(inProgressSwimlane).toContain('In Progress')
+  expect(inProgressSwimlane).toContain('Offline mode')
+  expect(inProgressSwimlane).toContain('Feature')
+  expect(inProgressSwimlane).toContain('High Priority')
 })
 
 // Test Case 6
@@ -111,7 +155,10 @@ test('Test Case 5', async ({ page }) => {
 // Confirm tags: "Design”
 test('Test Case 6', async ({ page }) => {
   await page.click('text=Mobile Application')
-  await page.waitForSelector('text=App icon design')
-  await page.waitForSelector('text=Done')
-  await page.waitForSelector('text=Design')
+  const swimlanes = await getSwimlanes(page)
+  const doneSwimlane = swimlanes[3]
+  expect(doneSwimlane).toBeTruthy()
+  expect(doneSwimlane).toContain('Done')
+  expect(doneSwimlane).toContain('App icon design')
+  expect(doneSwimlane).toContain('Design')
 })
