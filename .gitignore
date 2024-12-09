@@ -3,3 +3,4 @@ node_modules
 Caddyfile
 test-results
 playwright-report
+*.html
