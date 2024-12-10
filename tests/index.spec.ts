@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import dotenv from 'dotenv'
-import { _login } from './_login'
+import { _login } from './login'
 import { getSwimlanes } from './dom-helpers'
 import {
   AsanaBoardTestData,

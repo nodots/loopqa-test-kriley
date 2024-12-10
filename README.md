@@ -1,8 +1,6 @@
 # Loop Technical Evaluation
 
-Author: Ken Riley <kenr@nodots.com>
-
-Date: 2024.12.05
+Author: Ken Riley <kenr@nodots.com> Date: 2024.12.10
 
 ## Introduction
 
@@ -37,7 +35,7 @@ export type AsanaSwimlaneTestData = Omit<AsanaSwimlane, 'stories'> & {
 
 All test data comes from `test-data.ts` which implements the tests described in the [requirements document](https://docs.google.com/document/d/1oGwPbnNImNIlEkwdMcBCUhgQEPclkDss8iFZP2A8AQ0/edit?tab=t.0). This data in turn drives which tests are perfomed using the type system described above.
 
-### DOM Parsing: `getSwimlanes` function
+### DOM Parsing: `getSwimlanes` Function
 
 There is a single DOM-parsing function that retrieves the Swimlanes from the given page. This is heavy on specific selectors ATM, but, we need to infer relationships between tasks and swimlanes to ensure:
 
@@ -52,7 +50,7 @@ While it is a best-practice to test only [user-visible behavior](https://playwri
 
 ## Results
 
-![Test Results](./playwright-report/results.png)
+![Test Results](./latest-playwright-results.png)
 
 ## Recommendations
 
