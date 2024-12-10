@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test'
 import dotenv from 'dotenv'
-import { getSwimlanes } from './dom-helpers'
-import { AsanaCredentials } from './types'
-import { AsanaSwimlaneTestData, TestData } from './test-data'
-import { AsanaBoardTestData } from './test-data'
 import { _login } from './_login'
+import { getSwimlanes } from './dom-helpers'
+import {
+  AsanaBoardTestData,
+  AsanaSwimlaneTestData,
+  TestData,
+} from './test-data'
+import { AsanaCredentials } from './types'
 dotenv.config({ path: '../.env' })
 
 const tests = TestData as AsanaBoardTestData[]
@@ -44,13 +47,15 @@ for (const board of TestData) {
               const expectedSwimlanes =
                 board.title === 'Web Application'
                   ? WebBoard.swimlanes
-                  : MobileBoard.swimlanes
+                  : board.title === 'Mobile Application'
+                  ? MobileBoard.swimlanes
+                  : []
 
               const expectedSwimlane = expectedSwimlanes.find(
                 (s) => s.kind === swimlane.kind
               )
               // Note: We are throwing here because if any of these things fail it means the test setup itself is broken.
-              // Better implementation would be chaining promises.
+              // Better implementation would be chaining promises and handling errors at the tail end of the chain.
               if (!expectedSwimlane) throw new Error('Swimlane not found')
 
               const actualSwimlane = swimlanes.find(
