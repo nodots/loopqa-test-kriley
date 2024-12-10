@@ -25,8 +25,8 @@ test.beforeEach(async ({ page }) => {
   await _login(page)
 })
 
-test('Asana Board Tests', async ({ page }) => {
-  for (const board of TestData) {
+for (const board of TestData) {
+  test(`Asana Board Tests - ${board.title}`, async ({ page }) => {
     const boardButton = page.locator('nav >> text=' + board.title).first()
     await boardButton.click()
     const swimlanes = await getSwimlanes(page)
@@ -54,5 +54,5 @@ test('Asana Board Tests', async ({ page }) => {
         expect(story.tags).toEqual(expectedStory.tags)
       }
     }
-  }
-})
+  })
+}
