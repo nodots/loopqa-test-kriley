@@ -14,15 +14,17 @@ export enum ASANA_SWIMLANE_KIND {
 // Only including the fields we need for now
 export interface AsanaStory {
   title: string
+  description: string
   tags: string[]
 }
 
 export interface AsanaSwimlane {
-  kind: ASANA_SWIMLANE_KIND
   order: number
+  kind: ASANA_SWIMLANE_KIND
   stories: AsanaStory[]
 }
 
+// Consider more specific type to limit to 4 swimlanes
 export type AsanaSwimlanes = AsanaSwimlane[]
 
 export interface AsanaBoard {

@@ -1,107 +1,99 @@
-import {
-  AsanaStory,
-  AsanaSwimlanes,
-  ASANA_SWIMLANE_TYPE,
-  AsanaBoard,
-} from './types'
+import { AsanaSwimlane, ASANA_SWIMLANE_KIND, AsanaBoard } from '../types'
 
-// Start "Web Application Board" definitions
-
-// To Do Swimlane
-const implementUserAuthentication: AsanaStory = {
-  title: 'Implement user authentication',
-  tags: ['Feature', 'High Priority'],
+const webToDoSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.TODO,
+  order: 1,
+  stories: [
+    {
+      title: 'Implement user authentication',
+      tags: ['Feature', 'High Priority'],
+    },
+    {
+      title: 'Fix navigation bug',
+      tags: ['Bug'],
+    },
+  ],
 }
 
-const fixNavigationBug: AsanaStory = {
-  title: 'Fix navigation bug',
-  tags: ['Bug'],
+const webInProgressSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.IN_PROGRESS,
+  order: 2,
+  stories: [
+    {
+      title: 'Design system updates',
+      tags: ['Design'],
+    },
+  ],
 }
 
-const webAppToDoStories: AsanaStory[] = [
-  implementUserAuthentication,
-  fixNavigationBug,
-]
-
-// In Progress Swimlane
-const designSystemUpdates: AsanaStory = {
-  title: 'Design system updates',
-  tags: ['Design'],
+const webReviewSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.REVIEW,
+  order: 3,
+  stories: [],
 }
 
-const webAppInProgressStories: AsanaStory[] = [designSystemUpdates]
-
-// Review Swimlane
-const apiIntegration: AsanaStory = {
-  title: 'API integration',
-  tags: ['Feature', 'High Priority'],
+const webDoneSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.DONE,
+  order: 4,
+  stories: [],
 }
 
-const webAppReviewStories: AsanaStory[] = [apiIntegration]
-
-// Done Swimlane
-const updateDocumenation: AsanaStory = {
-  title: 'Update documentation',
-  tags: ['Feature'],
-}
-const webAppDoneStories: AsanaStory[] = [updateDocumenation]
-
-const webApplicationSwimlanes: AsanaSwimlanes = [
-  { type: ASANA_SWIMLANE_TYPE.TODO, stories: webAppToDoStories },
-  { type: ASANA_SWIMLANE_TYPE.IN_PROGRESS, stories: webAppInProgressStories },
-  { type: ASANA_SWIMLANE_TYPE.REVIEW, stories: webAppReviewStories },
-  { type: ASANA_SWIMLANE_TYPE.DONE, stories: webAppDoneStories },
-]
-
-const webApplicationBoard: AsanaBoard = {
-  title: 'Web Application',
-  swimlanes: webApplicationSwimlanes,
+const mobileToDoSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.TODO,
+  order: 1,
+  stories: [
+    {
+      title: 'Push notification system',
+      tags: ['Feature'],
+    },
+  ],
 }
 
-// End "Web Application Board" definitions
-
-// Start "Mobile Application Board" definitions
-
-// To Do Swimlane
-const pushNotificationSystem: AsanaStory = {
-  title: 'Push notification system',
-  tags: ['Feature'],
+const mobileInProgressSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.IN_PROGRESS,
+  order: 2,
+  stories: [
+    {
+      title: 'Offline mode',
+      tags: ['Feature', 'High Priority'],
+    },
+  ],
 }
 
-const mobileAppToDoStories: AsanaStory[] = [pushNotificationSystem]
-
-// In Progress Swimlane
-const offlineMode: AsanaStory = {
-  title: 'Offline mode',
-  tags: ['Feature', 'High Priority'],
+const mobileReviewSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.REVIEW,
+  order: 3,
+  stories: [],
 }
 
-const mobileAppInProgressStories: AsanaStory[] = [offlineMode]
-
-// Review Swimlane
-// No stories in this swimlane
-
-// Done Swimlane
-const appIconDesign: AsanaStory = {
-  title: 'App icon design',
-  tags: ['Design'],
+const mobileDoneSwimlane: AsanaSwimlane = {
+  kind: ASANA_SWIMLANE_KIND.DONE,
+  order: 3,
+  stories: [
+    {
+      title: 'App icon design',
+      tags: ['Design'],
+    },
+  ],
 }
 
-const mobileAppDoneStories: AsanaStory[] = [appIconDesign]
-
-const mobileApplicationSwimlanes: AsanaSwimlanes = [
-  { type: ASANA_SWIMLANE_TYPE.TODO, stories: mobileAppToDoStories },
+export const TestData: AsanaBoard[] = [
   {
-    type: ASANA_SWIMLANE_TYPE.IN_PROGRESS,
-    stories: mobileAppInProgressStories,
+    title: 'Web Application',
+    swimlanes: [
+      webToDoSwimlane,
+      webInProgressSwimlane,
+      webReviewSwimlane,
+      webDoneSwimlane,
+    ],
   },
-  { type: ASANA_SWIMLANE_TYPE.REVIEW, stories: [] },
-  { type: ASANA_SWIMLANE_TYPE.DONE, stories: mobileAppDoneStories },
+  {
+    title: 'Mobile Application',
+    swimlanes: [
+      mobileToDoSwimlane,
+      mobileInProgressSwimlane,
+      mobileReviewSwimlane,
+      mobileDoneSwimlane,
+    ],
+  },
 ]
-
-const mobileAppBoard: AsanaBoard = {
-  title: 'Mobile Application',
-  swimlanes: mobileApplicationSwimlanes,
-}
-
-export const TestData = { web: webApplicationBoard, mobile: mobileAppBoard }
