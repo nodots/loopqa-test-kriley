@@ -1,9 +1,17 @@
-import { expect, Page, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import dotenv from 'dotenv'
 import { getSwimlanes } from './dom-helpers'
 import { AsanaCredentials } from './types'
-// import { TestData } from './test-data'
+import { TestData } from './test-data'
+import { _login } from './_login'
 dotenv.config({ path: '../.env' })
+
+const WebBoard = TestData.find((board) => board.title === 'Web Application')
+if (!WebBoard) throw new Error('Web board not found')
+const MobileBoard = TestData.find(
+  (board) => board.title === 'Mobile Application'
+)
+if (!MobileBoard) throw new Error('Mobile board not found')
 
 export const ASANA_CREDENTIALS: AsanaCredentials = {
   baseUrl:
@@ -17,29 +25,34 @@ test.beforeEach(async ({ page }) => {
   await _login(page)
 })
 
-test('should display the correct swimlanes', async ({ page }) => {
-  const swimlanes = await getSwimlanes(page)
-  swimlanes.forEach((swimlane) => {
-    console.log(swimlane.kind)
-    console.log(swimlane.stories)
-  })
+test('Asana Board Tests', async ({ page }) => {
+  for (const board of TestData) {
+    const boardButton = page.locator('nav >> text=' + board.title).first()
+    await boardButton.click()
+    const swimlanes = await getSwimlanes(page)
+    const expectedSwimlanes =
+      board.title === 'Web Application'
+        ? WebBoard.swimlanes
+        : MobileBoard.swimlanes
 
-  expect(swimlanes.length).toBe(4)
+    expect(swimlanes.length).toBe(expectedSwimlanes.length)
+    for (let i = 0; i < swimlanes.length; i++) {
+      const swimlane = swimlanes[i]
+      const expectedSwimlane = expectedSwimlanes.find(
+        (swimlane) => swimlane.order === i
+      )
+      if (!expectedSwimlane) throw new Error('Swimlane not found')
+      expect(expectedSwimlane).toBeTruthy()
+      expect(swimlane.kind).toBe(expectedSwimlane.kind)
+      expect(swimlane.order).toBe(expectedSwimlane.order)
+      expect(swimlane.stories.length).toBe(expectedSwimlane.stories.length)
+      for (let j = 0; j < swimlane.stories.length; j++) {
+        const story = swimlane.stories[j]
+        const expectedStory = expectedSwimlane.stories[j]
+        expect(story.title).toBe(expectedStory.title)
+        expect(story.description).toBe(expectedStory.description)
+        expect(story.tags).toEqual(expectedStory.tags)
+      }
+    }
+  }
 })
-
-async function _login(page: Page): Promise<void> {
-  await page.goto(ASANA_CREDENTIALS.baseUrl)
-  const form = page.locator('form')
-  expect(form).toBeTruthy()
-  const usernameField = page.locator('#username')
-  const passwordField = page.locator('#password')
-  const submitButton = page.locator('button[type="submit"]')
-  expect(usernameField).toBeTruthy()
-  expect(passwordField).toBeTruthy()
-  expect(submitButton).toBeTruthy()
-
-  await usernameField.fill(ASANA_CREDENTIALS.username)
-  await passwordField.fill(ASANA_CREDENTIALS.password)
-  await submitButton.click()
-  return
-}
