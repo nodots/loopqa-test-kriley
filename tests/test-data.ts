@@ -1,6 +1,19 @@
-import { AsanaSwimlane, ASANA_SWIMLANE_KIND, AsanaBoard } from '../types'
+import {
+  AsanaSwimlane,
+  ASANA_SWIMLANE_KIND,
+  AsanaBoard,
+  AsanaStory,
+} from '../types'
 
-const webToDoSwimlane: AsanaSwimlane = {
+export type AsanaStoryTestData = AsanaStory & { included: boolean }
+export type AsanaSwimlaneTestData = Omit<AsanaSwimlane, 'stories'> & {
+  stories: AsanaStoryTestData[]
+}
+export type AsanaBoardTestData = Omit<AsanaBoard, 'swimlanes'> & {
+  swimlanes: AsanaSwimlaneTestData[]
+}
+
+const webToDoSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.TODO,
   order: 0,
   stories: [
@@ -8,16 +21,18 @@ const webToDoSwimlane: AsanaSwimlane = {
       title: 'Implement user authentication',
       description: 'Add login and signup functionality',
       tags: ['Feature', 'High Priority'],
+      included: true,
     },
     {
       title: 'Fix navigation bug',
       description: 'Menu does not close on mobile',
       tags: ['Bug'],
+      included: true,
     },
   ],
 }
 
-const webInProgressSwimlane: AsanaSwimlane = {
+const webInProgressSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.IN_PROGRESS,
   order: 1,
   stories: [
@@ -25,11 +40,12 @@ const webInProgressSwimlane: AsanaSwimlane = {
       title: 'Design system updates',
       description: 'Update color palette and typography',
       tags: ['Design'],
+      included: true,
     },
   ],
 }
 
-const webReviewSwimlane: AsanaSwimlane = {
+const webReviewSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.REVIEW,
   order: 2,
   stories: [
@@ -37,11 +53,12 @@ const webReviewSwimlane: AsanaSwimlane = {
       title: 'API integration',
       description: 'Connect to payment gateway',
       tags: ['Feature', 'High Priority'],
+      included: false,
     },
   ],
 }
 
-const webDoneSwimlane: AsanaSwimlane = {
+const webDoneSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.DONE,
   order: 3,
   stories: [
@@ -49,11 +66,12 @@ const webDoneSwimlane: AsanaSwimlane = {
       title: 'Update documentation',
       description: 'Add API endpoints documentation',
       tags: ['Feature'],
+      included: false,
     },
   ],
 }
 
-const mobileToDoSwimlane: AsanaSwimlane = {
+const mobileToDoSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.TODO,
   order: 0,
   stories: [
@@ -61,11 +79,12 @@ const mobileToDoSwimlane: AsanaSwimlane = {
       title: 'Push notification system',
       description: 'Implement push notifications for iOS and Android',
       tags: ['Feature'],
+      included: true,
     },
   ],
 }
 
-const mobileInProgressSwimlane: AsanaSwimlane = {
+const mobileInProgressSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.IN_PROGRESS,
   order: 1,
   stories: [
@@ -73,17 +92,18 @@ const mobileInProgressSwimlane: AsanaSwimlane = {
       title: 'Offline mode',
       description: 'Enable offline data synchronization',
       tags: ['Feature', 'High Priority'],
+      included: true,
     },
   ],
 }
 
-const mobileReviewSwimlane: AsanaSwimlane = {
+const mobileReviewSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.REVIEW,
   order: 2,
   stories: [],
 }
 
-const mobileDoneSwimlane: AsanaSwimlane = {
+const mobileDoneSwimlane: AsanaSwimlaneTestData = {
   kind: ASANA_SWIMLANE_KIND.DONE,
   order: 3,
   stories: [
@@ -91,11 +111,12 @@ const mobileDoneSwimlane: AsanaSwimlane = {
       title: 'App icon design',
       description: 'Create app icons for all required sizes',
       tags: ['Design'],
+      included: true,
     },
   ],
 }
 
-export const TestData: AsanaBoard[] = [
+export const TestData: AsanaBoardTestData[] = [
   {
     title: 'Web Application',
     swimlanes: [

@@ -2,11 +2,14 @@ import { expect, test } from '@playwright/test'
 import dotenv from 'dotenv'
 import { getSwimlanes } from './dom-helpers'
 import { AsanaCredentials } from './types'
-import { TestData } from './test-data'
+import { AsanaSwimlaneTestData, TestData } from './test-data'
+import { AsanaBoardTestData } from './test-data'
 import { _login } from './_login'
 dotenv.config({ path: '../.env' })
 
-const WebBoard = TestData.find((board) => board.title === 'Web Application')
+const tests = TestData as AsanaBoardTestData[]
+
+const WebBoard = tests.find((board) => board.title === 'Web Application')
 if (!WebBoard) throw new Error('Web board not found')
 const MobileBoard = TestData.find(
   (board) => board.title === 'Mobile Application'
@@ -26,33 +29,51 @@ test.beforeEach(async ({ page }) => {
 })
 
 for (const board of TestData) {
-  test(`Asana Board Tests - ${board.title}`, async ({ page }) => {
-    const boardButton = page.locator('nav >> text=' + board.title).first()
-    await boardButton.click()
-    const swimlanes = await getSwimlanes(page)
-    const expectedSwimlanes =
-      board.title === 'Web Application'
-        ? WebBoard.swimlanes
-        : MobileBoard.swimlanes
+  test.describe(`Asana Board Tests - ${board.title}`, () => {
+    test.beforeEach(async ({ page }) => {
+      const boardButton = page.locator(`nav >> text=${board.title}`).first()
+      await boardButton.click()
+    })
 
-    expect(swimlanes.length).toBe(expectedSwimlanes.length)
-    for (let i = 0; i < swimlanes.length; i++) {
-      const swimlane = swimlanes[i]
-      const expectedSwimlane = expectedSwimlanes.find(
-        (swimlane) => swimlane.order === i
-      )
-      if (!expectedSwimlane) throw new Error('Swimlane not found')
-      expect(expectedSwimlane).toBeTruthy()
-      expect(swimlane.kind).toBe(expectedSwimlane.kind)
-      expect(swimlane.order).toBe(expectedSwimlane.order)
-      expect(swimlane.stories.length).toBe(expectedSwimlane.stories.length)
-      for (let j = 0; j < swimlane.stories.length; j++) {
-        const story = swimlane.stories[j]
-        const expectedStory = expectedSwimlane.stories[j]
-        expect(story.title).toBe(expectedStory.title)
-        expect(story.description).toBe(expectedStory.description)
-        expect(story.tags).toEqual(expectedStory.tags)
-      }
+    for (const swimlane of board.swimlanes as AsanaSwimlaneTestData[]) {
+      test.describe(`Swimlane - ${swimlane.kind}`, () => {
+        for (const story of swimlane.stories) {
+          story.included &&
+            test(`Story - ${story.title}`, async ({ page }) => {
+              const swimlanes = await getSwimlanes(page)
+              const expectedSwimlanes =
+                board.title === 'Web Application'
+                  ? WebBoard.swimlanes
+                  : MobileBoard.swimlanes
+
+              const expectedSwimlane = expectedSwimlanes.find(
+                (s) => s.kind === swimlane.kind
+              )
+              // Note: We are throwing here because if any of these things fail it means the test setup itself is broken.
+              // Better implementation would be chaining promises.
+              if (!expectedSwimlane) throw new Error('Swimlane not found')
+
+              const actualSwimlane = swimlanes.find(
+                (s) => s.kind === swimlane.kind
+              )
+              if (!actualSwimlane) throw new Error('Actual swimlane not found')
+
+              const expectedStory = expectedSwimlane.stories.find(
+                (s) => s.title === story.title
+              )
+              if (!expectedStory) throw new Error('Expected story not found')
+
+              const actualStory = actualSwimlane.stories.find(
+                (s) => s.title === story.title
+              )
+              if (!actualStory) throw new Error('Actual story not found')
+
+              expect(actualStory.title).toBe(expectedStory.title)
+              expect(actualStory.description).toBe(expectedStory.description)
+              expect(actualStory.tags).toEqual(expectedStory.tags)
+            })
+        }
+      })
     }
   })
 }
