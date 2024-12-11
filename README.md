@@ -50,7 +50,7 @@ While it is a best-practice to test only [user-visible behavior](https://playwri
 
 ## Results
 
-![Test Results](./playwright-report/results.png)
+![Test Results](./latest-playwright-results.png)
 
 ## Recommendations
 

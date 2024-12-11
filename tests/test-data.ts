@@ -1,8 +1,8 @@
 import {
-  AsanaSwimlane,
   ASANA_SWIMLANE_KIND,
   AsanaBoard,
   AsanaStory,
+  AsanaSwimlane,
 } from './types'
 
 export type AsanaStoryTestData = AsanaStory & { included: boolean }

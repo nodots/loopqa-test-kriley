@@ -14,6 +14,7 @@ export enum ASANA_SWIMLANE_KIND {
 // Only including the fields we need for now
 export interface AsanaStory {
   title: string
+  description: string
   tags: string[]
 }
 

@@ -11,9 +11,6 @@ import { ASANA_SWIMLANE_KIND } from './types'
  *     of the DOM. E.g., we need to check for both for "Design" as a tag and
  *     "Design system updates" as a task title.
  *
- * Intentionally using more DOM-like selectors rather than Page.locator here to achieve
- * this. Purposefully returning the HTML content of the swimlanes to allow for more
- *
  * @param {Page} page - The Playwright page object to interact with.
  * @returns {Promise<any[]>} A promise that resolves to an array of swimlane HTML content.
  * @throws {Error} If the swimlanes are not found or incomplete.
