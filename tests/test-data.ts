@@ -3,7 +3,7 @@ import {
   ASANA_SWIMLANE_KIND,
   AsanaBoard,
   AsanaStory,
-} from '../types'
+} from './types'
 
 export type AsanaStoryTestData = AsanaStory & { included: boolean }
 export type AsanaSwimlaneTestData = Omit<AsanaSwimlane, 'stories'> & {
